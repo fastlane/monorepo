@@ -6,9 +6,13 @@ class Hendl
   attr_accessor :source
   attr_accessor :destination
 
-  def initialize(source: nil, destination: nil)
+  # Reason on why this was necessary
+  attr_accessor :reason
+
+  def initialize(source: nil, destination: nil, reason: nil)
     self.source = source
     self.destination = destination
+    self.reason = reason
     self.start
   end
 
@@ -64,9 +68,9 @@ class Hendl
     end
 
     # TODO: improve design + wording here
-    body = ["Hello @" + authors.join(", @")]
+    body = ["Hello @#{authors.join(", @")}"]
     body << "This issue was automatically migrated from [#{source}##{original.number}](#{original.html_url})."
-    body << "Please confirm that this issue is still relevant, otherwise it might automatically be closed after a while"
+    body << "Please confirm that this issue is still relevant, otherwise it might automatically be closed after a while :warning:"
     body << "Thanks for your helping making fastlane better :rocket:"
     client.add_comment(destination, issue.number, body.join("\n\n"))
 
@@ -79,12 +83,14 @@ class Hendl
     puts "#{original.number} is a pull request"
 
     body = ["Hello @#{original.user.login},"]
-    body << "This repository is now deprecated, since it was merged to [#{destination}](https://github.com/#{destination})"
-    body << "Please re-submit the PR with these changes to the new repository"
+    body << reason
+    body << "Sorry for the troubles, we'd appreciate if you could re-submit your Pull Request with these changes to the new repository"
 
     client.add_comment(source, original.number, body.join("\n\n"))
     client.close_pull_request(source, original.number)
   end
 end
 
-Hendl.new(source: "fastlane/playground", destination: "fastlane/playground2")
+Hendl.new(source: "fastlane/playground", 
+     destination: "fastlane/playground2", 
+          reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
