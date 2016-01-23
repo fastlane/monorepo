@@ -28,6 +28,8 @@ client.issues(source, per_page: 1000).each do |original|
                               options)
   
 
+  authors = [original.user.login]
+
   original_comments = client.issue_comments(source, original.number)
   original_comments.each do |original_comment|
     body = []
@@ -36,7 +38,16 @@ client.issues(source, per_page: 1000).each do |original|
     body << original_comment.body
     puts "Copying issue comment #{original_comment.id}..."
     client.add_comment(destination, issue.number, body.join("\n\n"))
+
+    authors << original_comment.user.login
   end
+
+  # TODO: improve design + wording here
+  body = ["Hello @" + authors.join(", @")]
+  body << "This issue was automatically migrated from [#{source}##{original.number}](#{original.html_url})."
+  body << "Please confirm that this issue is still relevant, otherwise it might automatically be closed after a while"
+  body << "Thanks for your helping making fastlane better :rocket:"
+  client.add_comment(destination, issue.number, body.join("\n\n"))
 
   client.close_issue(destination, issue.number) if issue.state != 'open'
 end
