@@ -38,7 +38,7 @@ class Hendl
   # so that people are automatically subscribed to notifications
   def hendl_issue(original)
     body = []
-    body << "This issue is copied from [#{source}##{original.number}](#{original.html_url}) "
+    body << "This issue was copied from [#{source}##{original.number}](#{original.html_url}) "
     body << "From @#{original.user.login} on #{original.created_at.strftime('%F')}"
     body << "----"
     body << original.body
@@ -67,24 +67,26 @@ class Hendl
       authors << original_comment.user.login
     end
 
-    # TODO: improve design + wording here
-    body = ["Hello @#{authors.join(", @")}"]
-    body << "This issue was automatically migrated from [#{source}##{original.number}](#{original.html_url})."
-    body << "Please confirm that this issue is still relevant, otherwise it might automatically be closed after a while :warning:"
-    body << "Thanks for your helping making fastlane better :rocket:"
-    client.add_comment(destination, issue.number, body.join("\n\n"))
+    if issue.state == 'open'
+      # TODO: improve design + wording here
+      body = ["Hello @#{authors.join(", @")}"]
+      body << "This issue was automatically migrated from [#{source}##{original.number}](#{original.html_url})."
+      body << "Please confirm that this issue is still relevant, otherwise it might automatically be closed after a while :warning:"
+      body << "Thanks for your helping making fastlane better :rocket:"
+      client.add_comment(destination, issue.number, body.join("\n\n"))
 
-    client.close_issue(destination, issue.number) if issue.state != 'open'
+      # Now it's the time to close the old issue
+      body = ["Hello @#{original.user.login},"]
+      body << reason
+      body << "This issue was automatically migrated to [#{destination}##{issue.number}](#{issue.html_url})."
+      body << "Please open the newly created issue and confirm that this ticket is still relevant, otherwise it will be closed after a while :warning:"
+      body << "Thanks for your helping making fastlane better :rocket:"
 
-    # Now it's the time to close the old issue
-    body = ["Hello @#{original.user.login},"]
-    body << reason
-    body << "This issue was automatically migrated to [#{destination}##{issue.number}](#{issue.html_url})."
-    body << "Please open the newly created issue and confirm that this ticket is still relevant, otherwise it will be closed after a while :warning:"
-    body << "Thanks for your helping making fastlane better :rocket:"
-
-    client.add_comment(source, original.number, body.join("\n\n"))
-    client.close_issue(source, original.number)
+      client.add_comment(source, original.number, body.join("\n\n"))
+      client.close_issue(source, original.number)
+    else
+      client.close_issue(destination, issue.number) 
+    end
   end
 
   # We want to comment on PRs and tell the user to re-submit it
