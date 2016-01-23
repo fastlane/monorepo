@@ -75,6 +75,16 @@ class Hendl
     client.add_comment(destination, issue.number, body.join("\n\n"))
 
     client.close_issue(destination, issue.number) if issue.state != 'open'
+
+    # Now it's the time to close the old issue
+    body = ["Hello @#{original.user.login},"]
+    body << reason
+    body << "This issue was automatically migrated to [#{destination}##{issue.number}](#{issue.html_url})."
+    body << "Please open the newly created issue and confirm that this ticket is still relevant, otherwise it will be closed after a while :warning:"
+    body << "Thanks for your helping making fastlane better :rocket:"
+
+    client.add_comment(source, original.number, body.join("\n\n"))
+    client.close_issue(source, original.number)
   end
 
   # We want to comment on PRs and tell the user to re-submit it
