@@ -43,7 +43,8 @@ class Hendl
     body << "----"
     body << original.body
 
-    options = { labels: original.labels }
+    tool_name_label = source.split("/").last
+    options = { labels: original.labels + [tool_name_label] }
     options[:assignee] = original.assignee.login if original.assignee
 
     puts "Copying issue #{original.number} from #{source}..."
