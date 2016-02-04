@@ -23,8 +23,8 @@ destination = File.join(destination, parent_name)
 # Move the main tool into its subfolder
 tmp = Dir.mktmpdir
 FileUtils.mv(Dir[File.join(destination, "*")], tmp) # move everything away to create a new fastlane folder
-FileUtils.mkdir_p(destination)
-FileUtils.mv(Dir[File.join(tmp, "*")], destination)
+FileUtils.mkdir_p(File.join(destination, parent_name))
+FileUtils.mv(Dir[File.join(tmp, "*")], File.join(destination, parent_name))
 
 
 names.each do |name|
@@ -59,3 +59,6 @@ end
 
 puts `open '#{path}'`
 puts `open '#{destination}'`
+
+puts "To push the changes run this:"
+puts "cd '#{destination}' && git push".green
