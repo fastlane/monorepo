@@ -22,7 +22,7 @@ destination = File.join(destination, parent_name)
 
 # Move the main tool into its subfolder
 tmp = Dir.mktmpdir
-FileUtils.mv(Dir["*"], tmp) # move everything away to create a new fastlane folder
+FileUtils.mv(Dir[File.join(destination, "*")], tmp) # move everything away to create a new fastlane folder
 FileUtils.mkdir_p(destination)
 FileUtils.mv(Dir[File.join(tmp, "*")], destination)
 
