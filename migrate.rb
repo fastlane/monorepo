@@ -21,10 +21,11 @@ parent_name = url.split("/").last
 destination = File.join(destination, parent_name)
 
 # Move the main tool into its subfolder
+subfolder_name = ENV["SUBFOLDER_NAME"] || "fastlane"
 tmp = Dir.mktmpdir
 FileUtils.mv(Dir[File.join(destination, "*")], tmp) # move everything away to create a new fastlane folder
-FileUtils.mkdir_p(File.join(destination, parent_name))
-FileUtils.mv(Dir[File.join(tmp, "*")], File.join(destination, parent_name))
+FileUtils.mkdir_p(File.join(destination, subfolder_name))
+FileUtils.mv(Dir[File.join(tmp, "*")], File.join(destination, subfolder_name))
 
 
 names.each do |name|
@@ -37,7 +38,7 @@ names.each do |name|
   ref = "#{path}/#{name}"
   puts "Going to '#{ref}'".green
   Dir.chdir(ref) do
-    cmd "mkdir #{name} (to prepare stuff)"
+    cmd "mkdir #{name}"
     Dir.foreach(".") do |current| # foreach instead of glob to have hidden items too
       next if current == '.' or current == '..'
       next if current.include?(".git")
