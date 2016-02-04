@@ -3,25 +3,33 @@
 require 'tmpdir'
 require 'colored'
 
-url = "https://github.com/fastlane/final-playground"
-
-names = %w(fastlane fastlane_core deliver snapshot frameit pem sigh produce cert gym pilot credentials_manager scan supply watchbuild match spaceship)
-
-path = Dir.mktmpdir
-
-destination = Dir.mktmpdir
-puts `cd '#{destination}' && git clone '#{url}'`
-destination = File.join(destination, url.split("/").last)
-
 def cmd(command)
   puts "$ #{command}".yellow
   puts `#{command}`
 end
 
+require './tools'
+names = @tools
+
+url = "https://github.com/fastlane/playground" # the repo everything goes to
+
+path = Dir.mktmpdir
+
+destination = Dir.mktmpdir
+puts `cd '#{destination}' && git clone '#{url}'`
+parent_name = url.split("/").last
+destination = File.join(destination, parent_name)
+
+# Move the main tool into its subfolder
+tmp = Dir.mktmpdir
+FileUtils.mv(Dir["*"], tmp) # move everything away to create a new fastlane folder
+FileUtils.mkdir_p(destination)
+FileUtils.mv(Dir[File.join(tmp, "*")], destination)
+
+
 names.each do |name|
   cmd "cd '#{path}' && git clone 'https://github.com/fastlane/#{name}' && git remote rm origin"
 end
-
 
 names.each do |name|
   puts "Rewriting history of '#{name}'"
