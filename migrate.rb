@@ -58,6 +58,19 @@ names.each do |name|
   end
 end
 
+Dir.chdir(destination) do
+  Dir.foreach(".") do |current|
+    next if current == '.' or current == '..'
+    next if current == ".git"
+
+    if current.start_with?(".")
+      puts "Deleting '#{current}' in the root"
+      FileUtils.rm_rf(current)
+    end
+  end
+  cmd "git add -A && git commit -m 'Removed temporary files'"
+end
+
 puts `open '#{path}'`
 puts `open '#{destination}'`
 
