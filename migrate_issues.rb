@@ -34,6 +34,14 @@ class Hendl
     end
   end
 
+  def smart_sleep
+    # via https://developer.github.com/guides/best-practices-for-integrators/#dealing-with-abuse-rate-limits
+    #   at least one second between requests
+    # also https://developer.github.com/v3/#rate-limiting
+    #   maximum of 5000 requests an hour => 83 requests per minute
+    sleep 1
+  end
+
   # We copy over all the issues, and also mention everyone
   # so that people are automatically subscribed to notifications
   def hendl_issue(original)
@@ -52,7 +60,7 @@ class Hendl
                                 original.title, 
                                 body.join("\n\n"), 
                                 options)
-    
+    smart_sleep
 
     authors = [original.user.login]
 
@@ -64,6 +72,7 @@ class Hendl
       body << original_comment.body
       puts "Copying issue comment #{original_comment.id}..."
       client.add_comment(destination, issue.number, body.join("\n\n"))
+      smart_sleep
 
       authors << original_comment.user.login
     end
@@ -88,6 +97,7 @@ class Hendl
     else
       client.close_issue(destination, issue.number) 
     end
+    smart_sleep
   end
 
   # We want to comment on PRs and tell the user to re-submit it
@@ -101,6 +111,7 @@ class Hendl
 
     client.add_comment(source, original.number, body.join("\n\n"))
     client.close_pull_request(source, original.number)
+    smart_sleep
   end
 end
 
