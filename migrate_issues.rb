@@ -10,9 +10,13 @@ class Hendl
   attr_accessor :source
   attr_accessor :destination
 
-  def initialize(source: nil, destination: nil)
+  # Reason on why this was necessary
+  attr_accessor :reason
+
+  def initialize(source: nil, destination: nil, reason: nil)
     self.source = source
     self.destination = destination
+    self.reason = reason
     self.start
   end
 
@@ -53,14 +57,15 @@ class Hendl
     original_comments = client.issue_comments(source, original.number)
     comments = []
     original_comments.each do |original_comment|
+      body = [original_comment.body, "-----", "Original comment by @#{original_comment.user.login}"]
       comments << {
         created_at: original_comment.created_at.iso8601,
-        body: original_comment.body
+        body: body.join("\n\n")
       }
     end
 
     tool_name_label = source.split("/").last
-    body = [original.body, "----", "Original issue by @izuzak"]
+    body = [original.body, "----", "Original issue by @#{original.user.login}, imported from [#{source}##{original.number}](#{original.html_url})"]
     data = {
       issue: {
         title: original.title,
@@ -94,16 +99,18 @@ class Hendl
   # We want to comment on PRs and tell the user to re-submit it
   # on the new repo, as we can't migrate them automatically
   def hendl_pr(original)
-    # puts "#{original.number} is a pull request"
+    puts "#{original.number} is a pull request"
 
-    # body = ["Hello @#{original.user.login},"]
-    # body << "Sorry for the troubles, we'd appreciate if you could re-submit your Pull Request with these changes to the new repository"
+    body = ["Hello @#{original.user.login},"]
+    body << reason
+    body << "Sorry for the troubles, we'd appreciate if you could re-submit your Pull Request with these changes to the new repository"
 
-    # client.add_comment(source, original.number, body.join("\n\n"))
-    # client.close_pull_request(source, original.number)
-    # smart_sleep
+    client.add_comment(source, original.number, body.join("\n\n"))
+    client.close_pull_request(source, original.number)
+    smart_sleep
   end
 end
 
-Hendl.new(source: "fastlane/playground", 
-     destination: "fastlane/playground2")
+Hendl.new(source: "fastlane/playground",
+     destination: "fastlane/playground2",
+          reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
