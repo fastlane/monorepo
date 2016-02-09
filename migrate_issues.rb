@@ -21,13 +21,17 @@ class Hendl
   end
 
   def start
+    puts "Fetching issues from '#{source}'..."
     client.issues(source, per_page: 1000).each do |original|
+      puts 'current'
       hendl(original)
       smart_sleep
+      break
     end
   end
 
   def hendl(original)
+    puts "Hendling #{original.number}"
     if original.pull_request.nil?
       hendl_issue(original)
     else
@@ -51,18 +55,17 @@ class Hendl
     original_comments.each do |original_comment|
       comments << {
         created_at: original_comment.created_at.iso8601,
-        body: original_comment.body,
-        # user: original_comment.user.login
+        body: original_comment.body
       }
     end
 
     tool_name_label = source.split("/").last
+    body = [original.body, "----", "Original issue by @izuzak"]
     data = {
       issue: {
         title: original.title,
-        body: original.body,
+        body: body.join("\n\n"),
         created_at: original.created_at.iso8601,
-        user: original.user.login,
         labels: original.labels + [tool_name_label],
         closed: original.state != "open"
       },
