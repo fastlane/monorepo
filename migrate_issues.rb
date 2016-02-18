@@ -25,12 +25,17 @@ class Hendl
   end
 
   def start
+    # TODO: check auto page
     puts "Fetching issues from '#{source}'..."
-    client.issues(source, per_page: 1000).each do |original|
-      puts 'current'
+    client.issues(source, per_page: 1000, state: "all").each do |original|
+      labels = original.labels.collect { |a| a[:name] }
+      if labels.include?("migrated") or labels.include?("migration_failed")
+        puts "Skipping #{original.number} because it's already migrated or failed"
+        next
+      end
+
       hendl(original)
       smart_sleep
-      break
     end
   end
 
@@ -64,6 +69,8 @@ class Hendl
       }
     end
 
+    actual_label = original.labels.collect { |a| a[:name] }
+
     tool_name_label = source.split("/").last
     body = [original.body, "----", "Original issue by @#{original.user.login}, imported from [#{source}##{original.number}](#{original.html_url})"]
     data = {
@@ -71,20 +78,51 @@ class Hendl
         title: original.title,
         body: body.join("\n\n"),
         created_at: original.created_at.iso8601,
-        labels: original.labels + [tool_name_label],
+        labels: actual_label + [tool_name_label],
         closed: original.state != "open"
       },
       comments: comments
     }
     data[:issue][:closed_at] = original.closed_at.iso8601 if original.state != "open"
 
-    puts data.to_s.green
-    puts ""
     response = Excon.post("https://api.github.com/repos/#{destination}/import/issues", body: data.to_json, headers: request_headers)
     response = JSON.parse(response.body)
-    puts response.to_s.yellow
+    status_url = response['url']
+    puts response
 
-    # TODO: link from old issue here and close the old one
+    new_issue_url = nil
+
+    (5..35).each do |request_num|
+      sleep(request_num)
+
+      puts "Sending #{status_url}"
+      async_response = Excon.get(status_url, headers: request_headers)
+      async_response = JSON.parse(async_response.body)
+      puts async_response.to_s.yellow
+
+      new_issue_url = async_response['issue_url']
+      break if new_issue_url.to_s.length > 0
+      puts "unable to get new issue url for #{original.number} after #{request_num - 4} requests".yellow
+    end
+
+    if new_issue_url.to_s.length > 0
+      new_issue_url.gsub!("api.github.com/repos", "github.com")
+
+      # reason, link to the new issue
+      puts "closing old issue #{original.number}"
+      body = [reason]
+      body << "Please post all further comments on the [new issue](#{new_issue_url})"
+      client.add_comment(source, original.number, body.join("\n\n"))
+      smart_sleep
+      client.close_issue(source, original.number) unless original.state == "closed"
+      client.update_issue(source, original.number, labels: (actual_label + ["migrated"]))
+    else
+      puts "unable to find new issue url, not closing or commenting".red
+      client.update_issue(source, original.number, labels: (actual_label + ["migration_failed"]))
+      puts "Status URL: #{status_url}"
+      # This means we have to manually migrate the issue
+      # if you want to try it again, just remove the migration_failed tag
+    end
   end
 
   def request_headers
@@ -106,8 +144,8 @@ class Hendl
     body << "Sorry for the troubles, we'd appreciate if you could re-submit your Pull Request with these changes to the new repository"
 
     client.add_comment(source, original.number, body.join("\n\n"))
-    client.close_pull_request(source, original.number)
     smart_sleep
+    client.close_pull_request(source, original.number)
   end
 end
 
