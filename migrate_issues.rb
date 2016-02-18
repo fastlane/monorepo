@@ -62,7 +62,8 @@ class Hendl
     original_comments = client.issue_comments(source, original.number)
     comments = []
     original_comments.each do |original_comment|
-      body = [original_comment.body, "-----", "Original comment by @#{original_comment.user.login}"]
+      table = "<table><tr><td><img src='https://avatars0.githubusercontent.com/u/#{original_comment.user.id}?v=3&s=140' width='70'></td><td>Original comment by @#{original_comment.user.login}</td></tr></table>"
+      body = [table, original_comment.body]
       comments << {
         created_at: original_comment.created_at.iso8601,
         body: body.join("\n\n")
@@ -72,7 +73,9 @@ class Hendl
     actual_label = original.labels.collect { |a| a[:name] }
 
     tool_name_label = source.split("/").last
-    body = [original.body, "----", "Original issue by @#{original.user.login}, imported from [#{source}##{original.number}](#{original.html_url})"]
+    table_link = "Imported from <a href='#{original.html_url}'>#{source}##{original.number}</a>"
+    table = "<table><tr><td><img src='https://avatars0.githubusercontent.com/u/#{original.user.id}?v=3&s=140' width='70'></td><td>Original issue by @#{original.user.login} - #{table_link}</td></tr></table>"
+    body = [table, original.body]
     data = {
       issue: {
         title: original.title,
@@ -96,7 +99,7 @@ class Hendl
       sleep(request_num)
 
       puts "Sending #{status_url}"
-      async_response = Excon.get(status_url, headers: request_headers)
+      async_response = Excon.get(status_url, headers: request_headers) # if this crashes, make sure to have a valid token with admin permission to the actual repo
       async_response = JSON.parse(async_response.body)
       puts async_response.to_s.yellow
 
