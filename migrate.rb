@@ -41,7 +41,7 @@ end
 names.each do |name|
   puts "Rewriting history of '#{name}'"
 
-  ref = "#{path}/#{name}"
+  ref = File.expand_path("#{path}/#{name}")
   puts "Going to '#{ref}'".green
   Dir.chdir(ref) do
     cmd "mkdir #{name}"
