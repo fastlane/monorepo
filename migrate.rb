@@ -2,6 +2,7 @@
 
 require 'tmpdir'
 require 'colored'
+require 'pry'
 
 def cmd(command)
   puts "$ #{command}".yellow
@@ -11,11 +12,16 @@ end
 require './tools'
 names = @tools
 
-url = "https://github.com/fastlane/playground" # the repo everything goes to
+url = "https://github.com/fastlane/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
 
 path = Dir.mktmpdir
+path = "all_cloned"
+destination = "workspace"
+FileUtils.rm_rf(path)
+FileUtils.rm_rf(destination)
+FileUtils.mkdir_p(path)
+FileUtils.mkdir_p(destination)
 
-destination = Dir.mktmpdir
 puts `cd '#{destination}' && git clone '#{url}'`
 parent_name = url.split("/").last
 destination = File.join(destination, parent_name)
@@ -35,7 +41,7 @@ end
 names.each do |name|
   puts "Rewriting history of '#{name}'"
 
-  ref = "#{path}/#{name}"
+  ref = File.expand_path("#{path}/#{name}")
   puts "Going to '#{ref}'".green
   Dir.chdir(ref) do
     cmd "mkdir #{name}"
