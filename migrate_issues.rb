@@ -168,3 +168,12 @@ end
 Hendl.new(source: "fastlane/playground",
      destination: "fastlane/playground2",
           reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
+
+# require './tools'
+# names = @tools
+# source = "fastlane/playground" # TODO: Should be fastlane
+# names.each do |current|
+#   Hendl.new(source: "fastlane/#{current}",
+#        destination: "fastlane/fastlane",
+#             reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
+# end
