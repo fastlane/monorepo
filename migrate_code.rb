@@ -11,6 +11,7 @@ end
 
 require './tools'
 names = @tools
+names << "countdown"
 
 url = "https://github.com/fastlane/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
 
@@ -77,6 +78,10 @@ Dir.chdir(destination) do
   end
   cmd "git add -A && git commit -m 'Removed temporary files'"
 end
+
+# Migrate the countdown repo too
+FileUtils.mv(File.join(destination, "countdown", "Rakefile"), File.join(destination, "Rakefile"))
+# We leave the countdown folder for now, as it also contains documentation about things
 
 puts `open '#{path}'`
 puts `open '#{destination}'`

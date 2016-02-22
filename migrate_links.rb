@@ -23,3 +23,5 @@ Dir["./workspace/**/*"].each do |path|
 
   File.write(path, content)
 end
+
+puts "Changed files locally, open the workspace to commit and push those changes"
