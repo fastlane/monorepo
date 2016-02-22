@@ -1,0 +1,7 @@
+gemspec path: "fastlane"
+
+Dir["*"].each do |current|
+  next if Dir[File.join(current, "*.gemspec")].count == 0
+  next if current == "fastlane"
+  gem current, path: current
+end
