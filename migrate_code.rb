@@ -35,7 +35,7 @@ FileUtils.mv(Dir[File.join(tmp, "*")], File.join(destination, subfolder_name))
 
 
 names.each do |name|
-  cmd "cd '#{path}' && git clone 'https://github.com/fastlane/#{name}' && git remote rm origin"
+  cmd "cd '#{path}' && git clone 'https://github.com/fastlane/#{name}' && cd #{name} && git remote rm origin"
 end
 
 names.each do |name|
