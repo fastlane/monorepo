@@ -82,6 +82,10 @@ end
 # Migrate the countdown repo too
 FileUtils.mv(File.join(destination, "countdown", "Rakefile"), File.join(destination, "Rakefile"))
 # We leave the countdown folder for now, as it also contains documentation about things
+Dir.chdir(destination) do
+  cmd "git add -A"
+  cmd "git commit -m 'Moved countdown Rakefile'"
+end
 
 puts `open '#{path}'`
 puts `open '#{destination}'`
