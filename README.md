@@ -1,10 +1,9 @@
 # monorepo
 Scripts to migrate to a monorepo
 
-### migrate.rb
+### migrate_code.rb
 
-Migrate the actual repos
-
+Migrate the actual repos (source code)
 
 ### migrate_issues.rb
 
