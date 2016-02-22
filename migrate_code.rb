@@ -73,6 +73,7 @@ def remove_dot_files(path)
     Dir.foreach(".") do |current|
       next if current == '.' or current == '..'
       next if current == ".git"
+      next if current == ".rspec"
 
       if current.start_with?(".")
         puts "Deleting '#{current}' dot file"
