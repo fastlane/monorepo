@@ -25,6 +25,7 @@ FileUtils.mkdir_p(destination)
 puts `cd '#{destination}' && git clone '#{url}'`
 parent_name = url.split("/").last
 destination = File.join(destination, parent_name)
+raise "Destination repo must be the fastlane repo".red unless File.exist?(File.join(destination, "fastlane.gemspec"))
 
 # Move the main tool into its subfolder
 subfolder_name = ENV["SUBFOLDER_NAME"] || "fastlane"
