@@ -66,25 +66,38 @@ names.each do |name|
   end
 end
 
-Dir.chdir(destination) do
-  Dir.foreach(".") do |current|
-    next if current == '.' or current == '..'
-    next if current == ".git"
+def remove_dot_files(path)
+  Dir.chdir(path) do
+    Dir.foreach(".") do |current|
+      next if current == '.' or current == '..'
+      next if current == ".git"
 
-    if current.start_with?(".")
-      puts "Deleting '#{current}' in the root"
-      FileUtils.rm_rf(current)
+      if current.start_with?(".")
+        puts "Deleting '#{current}' dot file"
+        FileUtils.rm_rf(current)
+      end
     end
   end
-  cmd "git add -A && git commit -m 'Removed temporary files'"
 end
+
+remove_dot_files(destination)
+names.each do |current|
+  remove_dot_files(File.join(destination, current))
+end
+cmd "git add -A && git commit -m 'Removed dot files'"
 
 # Migrate the countdown repo too
 FileUtils.mv(File.join(destination, "countdown", "Rakefile"), File.join(destination, "Rakefile"))
+
+# Copy files from files_to_copy
+Dir["files_to_copy/*"].each do |current|
+  FileUtils.cp(current, destination)
+end
+
 # We leave the countdown folder for now, as it also contains documentation about things
 Dir.chdir(destination) do
   cmd "git add -A"
-  cmd "git commit -m 'Moved countdown Rakefile'"
+  cmd "git commit -m 'Switched to fastlane mono repo'"
 end
 
 puts `open '#{path}'`
