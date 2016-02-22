@@ -66,6 +66,8 @@ names.each do |name|
   end
 end
 
+# foreach => hidden files as well
+
 def remove_dot_files(path)
   Dir.chdir(path) do
     Dir.foreach(".") do |current|
@@ -90,8 +92,9 @@ cmd "git add -A && git commit -m 'Removed dot files'"
 FileUtils.mv(File.join(destination, "countdown", "Rakefile"), File.join(destination, "Rakefile"))
 
 # Copy files from files_to_copy
-Dir["files_to_copy/*"].each do |current|
-  FileUtils.cp(current, destination)
+Dir.foreach("files_to_copy").each do |current|
+  next if current == '.' or current == '..'
+  FileUtils.cp(File.join("files_to_copy", current), File.join(destination, File.basename(current)))
 end
 
 # We leave the countdown folder for now, as it also contains documentation about things

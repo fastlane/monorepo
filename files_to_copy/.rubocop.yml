@@ -40,12 +40,6 @@ Style/FileName:
 Style/SpecialGlobalVars:
   Enabled: false
 
-# options.rb might be large, we know that
-Metrics/MethodLength:
-  Max: 60
-  Exclude:
-    - '**/lib/*/options.rb'
-
 Metrics/AbcSize:
   Max: 60
   Exclude:
@@ -136,6 +130,8 @@ Metrics/MethodLength:
   Exclude:
     - '**/lib/fastlane/actions/*.rb'
     - '**/bin/fastlane'
+    - '**/lib/*/options.rb'
+  Max: 60
 
 AllCops:
   Include:
