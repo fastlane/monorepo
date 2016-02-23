@@ -47,9 +47,6 @@ copy_with_hidden(destination, tmp)
 FileUtils.mkdir_p(File.join(destination, subfolder_name))
 copy_with_hidden(tmp, File.join(destination, subfolder_name))
 
-`open #{File.join(destination, subfolder_name)}`
-raise 'stop'
-
 names.each do |name|
   cmd "cd '#{path}' && git clone 'https://github.com/fastlane/#{name}' && cd #{name} && git remote rm origin"
 end
