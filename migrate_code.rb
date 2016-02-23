@@ -32,20 +32,22 @@ raise "Destination repo must be the fastlane repo".red unless File.exist?(File.j
 subfolder_name = ENV["SUBFOLDER_NAME"] || "fastlane"
 
 
-def copy_with_hidden(from, to)
-  FileUtils.mv(Dir[File.join(from, "*")], to) # move everything away to create a new fastlane folder
+# def copy_with_hidden(from, to)
+#   FileUtils.mv(Dir[File.join(from, "*")], to) # move everything away to create a new fastlane folder
 
-  # to also copy hidden files...
-  Dir.foreach(from).each do |current|
-    next if current == '.' or current == '..'
-    FileUtils.mv(File.join(from, current), File.join(to, File.basename(current)))
-  end
-end
+#   # to also copy hidden files...
+#   Dir.foreach(from).each do |current|
+#     next if current == '.' or current == '..'
+#     FileUtils.mv(File.join(from, current), File.join(to, File.basename(current)))
+#   end
+# end
 
 tmp = Dir.mktmpdir
-copy_with_hidden(destination, tmp)
+# copy_with_hidden(destination, tmp)
+FileUtils.mv(Dir[File.join(destination, "*")], tmp) # move everything away to create a new fastlane folder
 FileUtils.mkdir_p(File.join(destination, subfolder_name))
-copy_with_hidden(tmp, File.join(destination, subfolder_name))
+FileUtils.mv(Dir[File.join(tmp, "*")], File.join(destination, subfolder_name))
+# copy_with_hidden(tmp, File.join(destination, subfolder_name))
 
 names.each do |name|
   cmd "cd '#{path}' && git clone 'https://github.com/fastlane/#{name}' && cd #{name} && git remote rm origin"
