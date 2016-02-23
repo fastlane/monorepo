@@ -12,7 +12,7 @@ Dir["./workspace/**/*"].each do |path|
   puts "Converting #{path}"
 
   content = File.read(path)
-  content.gsub!(/https\:\/\/github.com\/fastlane\/(\w+)[\w\d\-\/]*/) do |line|
+  content.gsub!(/https\:\/\/github.com\/fastlane\/([\w\-\d]+)[\w\d\-\/]*/) do |line|
     tool_name = Regexp.last_match[1]
     if exceptions.include?(tool_name) or line.include?("/releases/") or line.include?("tree/master") or line.include?("blob/master") or line.include?("/issues/")
       line
