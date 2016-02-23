@@ -41,7 +41,7 @@ Style/SpecialGlobalVars:
   Enabled: false
 
 Metrics/AbcSize:
-  Max: 60
+  Max: 63
   Exclude:
     - '**/lib/*/options.rb'
 
@@ -142,10 +142,6 @@ AllCops:
 ##################
 # TODO
 ##################
-
-# Offense count: 20
-Metrics/AbcSize:
-  Max: 63
 
 # Offense count: 7
 # Configuration parameters: CountComments.
