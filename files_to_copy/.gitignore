@@ -1,7 +1,7 @@
 *.gem
 *.rbc
 /.config
-/coverage/
+coverage/
 /InstalledFiles
 /pkg/
 /spec/reports/
@@ -38,5 +38,4 @@ Gemfile.lock
 .idea
 spec/fixtures/*.itmsp/*.png
 /integration
-spec/fixtures/fastfiles/report.xml
-fastlane/report.xml
+**/report.xml
