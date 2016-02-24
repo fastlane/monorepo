@@ -101,7 +101,7 @@ remove_dot_files(destination)
 names.each do |current|
   remove_dot_files(File.join(destination, current))
 end
-cmd "git add -A && git commit -m 'Removed dot files'"
+cmd "cd #{destination} && git add -A && git commit -m 'Removed dot files'"
 
 # Migrate the countdown repo too
 FileUtils.mv(File.join(destination, "countdown", "Rakefile"), File.join(destination, "Rakefile"))
