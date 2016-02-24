@@ -13,7 +13,7 @@ require './tools'
 names = @tools
 names << "countdown"
 
-url = "https://github.com/fastlane/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
+url = "https://github.com/krausefx/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
 
 path = Dir.mktmpdir
 path = "all_cloned"
