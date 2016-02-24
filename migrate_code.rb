@@ -112,6 +112,11 @@ Dir.foreach("files_to_copy").each do |current|
   FileUtils.cp(File.join("files_to_copy", current), File.join(destination, File.basename(current)))
 end
 
+Dir[File.join(destination, "**/Gemfile")].each do |current|
+  next if current.include?("fastlane/Gemfile")
+  File.write(current, "source \"https://rubygems.org\"\n\ngemspec\n")
+end
+
 # We leave the countdown folder for now, as it also contains documentation about things
 Dir.chdir(destination) do
   cmd "git add -A"
