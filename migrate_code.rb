@@ -112,7 +112,7 @@ Dir.foreach("files_to_copy").each do |current|
   FileUtils.cp(File.join("files_to_copy", current), File.join(destination, File.basename(current)))
 end
 
-Dir[File.join(destination, "**/Gemfile")].each do |current|
+Dir[File.join(destination, "*/Gemfile")].each do |current| # one * only, that's important, otherwise it matches ./Gemfile
   next if current.include?("fastlane/Gemfile")
   File.write(current, "source \"https://rubygems.org\"\n\ngemspec\n")
 end
