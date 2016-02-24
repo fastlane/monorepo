@@ -1,5 +1,5 @@
-# monorepo
-Scripts to migrate to a monorepo
+# fastlane - monorepo
+Scripts to migrate to a monorepo, more information on [krausefx.com](https://krausefx.com)
 
 ## Source Code
 
