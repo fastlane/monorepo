@@ -24,13 +24,13 @@ FileUtils.rm_rf(destination)
 FileUtils.mkdir_p(path)
 FileUtils.mkdir_p(destination)
 
-sh "cd '#{destination}' && git clone '#{url}'"
+cmd "cd '#{destination}' && git clone '#{url}'"
 parent_name = url.split("/").last
 destination = File.join(destination, parent_name)
 raise "Destination repo must be the fastlane repo".red unless File.exist?(File.join(destination, "fastlane.gemspec"))
 
 Dir.chdir(destination) do
-  sh "git checkout -b '#{new_branch_name}'"
+  cmd "git checkout -b '#{new_branch_name}'"
 end
 
 # Move the main tool into its subfolder
