@@ -181,8 +181,7 @@ class Hendl
 end
 
 require './tools'
-names = @tools
-names.delete("fastlane") # we don't want to import issues from our own repo
+names = @tools.reject { |tool| tool == "fastlane" } # we don't want to import issues from our own repo
 destination = "fastlane/playground" # TODO: Should be fastlane
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
