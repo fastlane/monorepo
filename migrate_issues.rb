@@ -27,6 +27,7 @@ class Hendl
   def start
     client.auto_paginate = true
     puts "Fetching issues from '#{source}'..."
+    counter = 0
     client.issues(source, per_page: 1000, state: "all").each do |original|
       labels = original.labels.collect { |a| a[:name] }
       if labels.include?("migrated") or labels.include?("migration_failed")
@@ -36,7 +37,9 @@ class Hendl
 
       hendl(original)
       smart_sleep
+      counter += 1
     end
+    puts "[SUCCESS] Migrated #{counter} issues / PRs"
   end
 
   def hendl(original)
@@ -108,17 +111,25 @@ class Hendl
 
     new_issue_url = nil
 
-    (5..35).each do |request_num|
-      sleep(request_num)
+    begin
+      (5..35).each do |request_num|
+        sleep(request_num)
 
-      puts "Sending #{status_url}"
-      async_response = Excon.get(status_url, headers: request_headers) # if this crashes, make sure to have a valid token with admin permission to the actual repo
-      async_response = JSON.parse(async_response.body)
-      puts async_response.to_s.yellow
+        puts "Sending #{status_url}"
+        async_response = Excon.get(status_url, headers: request_headers) # if this crashes, make sure to have a valid token with admin permission to the actual repo
+        async_response = JSON.parse(async_response.body)
+        puts async_response.to_s.yellow
 
-      new_issue_url = async_response['issue_url']
-      break if new_issue_url.to_s.length > 0
-      puts "unable to get new issue url for #{original.number} after #{request_num - 4} requests".yellow
+        new_issue_url = async_response['issue_url']
+        break if new_issue_url.to_s.length > 0
+        puts "unable to get new issue url for #{original.number} after #{request_num - 4} requests".yellow
+      end
+    rescue => ex
+      puts "Something went wrong, wups"
+      puts ex.to_s
+      # If the error message is
+      # {"message"=>"Not Found", "documentation_url"=>"https://developer.github.com/v3"}
+      # that just means that fastlane-bot doesn't have admin access
     end
 
     if new_issue_url.to_s.length > 0
@@ -127,7 +138,7 @@ class Hendl
       # reason, link to the new issue
       puts "closing old issue #{original.number}"
       body = [reason]
-      body << "Please post all further comments on the [new issue](#{new_issue_url})"
+      body << "Please post all further comments on the [new issue](#{new_issue_url})."
       client.add_comment(source, original.number, body.join("\n\n"))
       smart_sleep
       client.close_issue(source, original.number) unless original.state == "closed"
@@ -170,11 +181,10 @@ class Hendl
 end
 
 require './tools'
-names = @tools
-names.delete("fastlane") # we don't want to import issues from our own repo
+names = @tools.reject { |tool| tool == "fastlane" } # we don't want to import issues from our own repo
 destination = "fastlane/playground" # TODO: Should be fastlane
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
        destination: destination,
-            reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
+            reason: "`fastlane` is now a mono repo, you can read more about the change in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
 end
