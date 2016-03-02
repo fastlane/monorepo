@@ -25,7 +25,7 @@ class Hendl
   end
 
   def start
-    # TODO: check auto page
+    client.auto_paginate = true
     puts "Fetching issues from '#{source}'..."
     client.issues(source, per_page: 1000, state: "all").each do |original|
       labels = original.labels.collect { |a| a[:name] }
