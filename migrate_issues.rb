@@ -154,6 +154,10 @@ class Hendl
   # on the new repo, as we can't migrate them automatically
   def hendl_pr(original)
     puts "#{original.number} is a pull request"
+    if original.state != "open"
+      puts "#{original.number} is already closed - nothing to do here"
+      return
+    end
 
     body = ["Hello @#{original.user.login},"]
     body << reason
