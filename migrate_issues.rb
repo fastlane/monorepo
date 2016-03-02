@@ -27,6 +27,7 @@ class Hendl
   def start
     client.auto_paginate = true
     puts "Fetching issues from '#{source}'..."
+    counter = 0
     client.issues(source, per_page: 1000, state: "all").each do |original|
       labels = original.labels.collect { |a| a[:name] }
       if labels.include?("migrated") or labels.include?("migration_failed")
@@ -36,7 +37,9 @@ class Hendl
 
       hendl(original)
       smart_sleep
+      counter += 1
     end
+    puts "[SUCCESS] Migrated #{counter} issues / PRs"
   end
 
   def hendl(original)
