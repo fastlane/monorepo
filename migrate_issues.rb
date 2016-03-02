@@ -154,6 +154,10 @@ class Hendl
   # on the new repo, as we can't migrate them automatically
   def hendl_pr(original)
     puts "#{original.number} is a pull request"
+    if original.state != "open"
+      puts "#{original.number} is already closed - nothing to do here"
+      return
+    end
 
     body = ["Hello @#{original.user.login},"]
     body << reason
@@ -165,15 +169,12 @@ class Hendl
   end
 end
 
-Hendl.new(source: "fastlane/playground",
-     destination: "fastlane/playground2",
-          reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
-
-# require './tools'
-# names = @tools
-# source = "fastlane/playground" # TODO: Should be fastlane
-# names.each do |current|
-#   Hendl.new(source: "fastlane/#{current}",
-#        destination: "fastlane/fastlane",
-#             reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://fastlane.tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
-# end
+require './tools'
+names = @tools
+names.delete("fastlane") # we don't want to import issues from our own repo
+destination = "fastlane/playground" # TODO: Should be fastlane
+names.each do |current|
+  Hendl.new(source: "fastlane/#{current}",
+       destination: destination,
+            reason: "`fastlane` is now a mono repo, you can read more about this decision in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
+end
