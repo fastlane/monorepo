@@ -15,6 +15,7 @@ names << "countdown"
 
 url = "https://github.com/krausefx/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
 
+new_branch_name = "monorepo"
 path = Dir.mktmpdir
 path = "all_cloned"
 destination = "workspace"
@@ -23,10 +24,14 @@ FileUtils.rm_rf(destination)
 FileUtils.mkdir_p(path)
 FileUtils.mkdir_p(destination)
 
-puts `cd '#{destination}' && git clone '#{url}'`
+sh "cd '#{destination}' && git clone '#{url}'"
 parent_name = url.split("/").last
 destination = File.join(destination, parent_name)
 raise "Destination repo must be the fastlane repo".red unless File.exist?(File.join(destination, "fastlane.gemspec"))
+
+Dir.chdir(destination) do
+  sh "git checkout -b '#{new_branch_name}'"
+end
 
 # Move the main tool into its subfolder
 subfolder_name = ENV["SUBFOLDER_NAME"] || "fastlane"
@@ -127,4 +132,4 @@ puts `open '#{path}'`
 puts `open '#{destination}'`
 
 puts "To push the changes run this:"
-puts "cd '#{destination}' && git push".green
+puts "cd '#{destination}' && git push origin #{destination}".green
