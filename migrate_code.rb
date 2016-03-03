@@ -61,6 +61,8 @@ end
 
 names.each do |name|
   puts "Rewriting history of '#{name}'"
+  commit_message = "Migrate #{name} to the fastlane mono repo"
+  commit_body = "You can read more about the change in our blog post: https://krausefx.com/blog/our-goal-to-unify-fastlane-tools"
 
   ref = File.expand_path("#{path}/#{name}")
   puts "Going to '#{ref}'".green
@@ -72,7 +74,7 @@ names.each do |name|
       cmd "git mv '#{current}' '#{name}/'"
     end
     cmd "git add -A"
-    cmd "git commit -m 'Migrate #{name} to fastlane mono repo'"
+    cmd "git commit -m '#{commit_message}' -m '#{commit_body}'"
   end
 
   puts "Going to '#{destination}' (to merge stuff)".green
@@ -81,7 +83,7 @@ names.each do |name|
     cmd "git pull local_ref master"
     cmd "git remote rm local_ref"
     cmd "git add -A"
-    cmd "git commit -m 'Migrate #{name} to fastlane mono repo'"
+    cmd "git commit -m '#{commit_message}' -m '#{commit_body}'"
   end
 end
 
