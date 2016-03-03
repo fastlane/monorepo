@@ -188,11 +188,9 @@ class Hendl
 end
 
 require './tools'
-names = @tools.reject { |tool| tool == "fastlane" } # we don't want to import issues from our own repo
 destination = "fastlane/playground" # TODO: Should be fastlane
-names = [ENV["TOOL"]] if ENV["TOOL"]
-open_only = true
-open_only = false if ENV["ALL"]
+names = Array(ENV["TOOL"] || @tools.delete("fastlane")) # we don't want to import issues from our own repo
+open_only = !ENV["ALL"]
 
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
