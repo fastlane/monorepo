@@ -39,3 +39,4 @@ Gemfile.lock
 spec/fixtures/*.itmsp/*.png
 /integration
 **/report.xml
+**/.bundle
