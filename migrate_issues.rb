@@ -10,13 +10,16 @@ class Hendl
   attr_accessor :source
   attr_accessor :destination
 
+  attr_accessor :open_only
+
   # Reason on why this was necessary
   attr_accessor :reason
 
-  def initialize(source: nil, destination: nil, reason: nil)
+  def initialize(source: nil, destination: nil, reason: nil, open_only: false)
     self.source = source
     self.destination = destination
     self.reason = reason
+    self.open_only = open_only
     self.start
   end
 
@@ -29,6 +32,10 @@ class Hendl
     puts "Fetching issues from '#{source}'..."
     counter = 0
     client.issues(source, per_page: 1000, state: "all").each do |original|
+      if self.open_only and original.state != "open"
+        puts "Skipping #{original.number} as it's not an open one"
+      end
+
       labels = original.labels.collect { |a| a[:name] }
       if labels.include?("migrated") or labels.include?("migration_failed")
         puts "Skipping #{original.number} because it's already migrated or failed"
@@ -186,5 +193,6 @@ destination = "fastlane/playground" # TODO: Should be fastlane
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
        destination: destination,
-            reason: "`fastlane` is now a mono repo, you can read more about the change in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).")
+            reason: "`fastlane` is now a mono repo, you can read more about the change in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).",
+         open_only: true)
 end
