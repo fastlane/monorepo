@@ -142,14 +142,16 @@ class Hendl
     if new_issue_url.to_s.length > 0
       new_issue_url.gsub!("api.github.com/repos", "github.com")
 
+      client.update_issue(source, original.number, labels: (actual_label + ["migrated"]))
+
       # reason, link to the new issue
       puts "closing old issue #{original.number}"
-      body = [reason]
-      body << "Please post all further comments on the [new issue](#{new_issue_url})."
+      body = []
+      body << "This issue was migrated to #{new_issue_url}. Please post all further comments there."
+      body << reason
       client.add_comment(source, original.number, body.join("\n\n"))
       smart_sleep
       client.close_issue(source, original.number) unless original.state == "closed"
-      client.update_issue(source, original.number, labels: (actual_label + ["migrated"]))
     else
       puts "unable to find new issue url, not closing or commenting".red
       client.update_issue(source, original.number, labels: (actual_label + ["migration_failed"]))
