@@ -13,7 +13,7 @@ require './tools'
 names = @tools
 names << "countdown"
 
-url = "https://github.com/fastlane/playground" # the repo everything goes to # TODO: should be fastlane/fastlane
+url = "https://github.com/fastlane/fastlane" # the repo everything goes to
 
 new_branch_name = "monorepo"
 path = Dir.mktmpdir

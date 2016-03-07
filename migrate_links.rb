@@ -1,7 +1,6 @@
 require 'pry'
 
 new_repo = "fastlane"
-new_repo = "playground" # TODO: Remove
 exceptions = ["countdown", "boarding", "fastlane.tools", "refresher", "examples", "setups", "shenzhen", "itc-api-docs", "enhancer", "brewed-jenkins", "codes", "code-of-conduct", "spaceship.airforce"]
 not_in_line = ["/graphs", "/releases", "/tree/", "/blob", "/issues"]
 
