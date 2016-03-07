@@ -188,7 +188,7 @@ class Hendl
 end
 
 require './tools'
-destination = "fastlane/playground" # TODO: Should be fastlane
+destination = "fastlane/fastlane" # TODO: Should be fastlane
 names = Array(ENV["TOOL"] || @tools.delete("fastlane")) # we don't want to import issues from our own repo
 open_only = !ENV["ALL"]
 
