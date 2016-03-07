@@ -70,7 +70,7 @@ class Hendl
     "<table>
       <tr>
         <td>
-          <img src='https://avatars0.githubusercontent.com/u/#{user_id}?v=3&s=140' width='70'>
+          <img src='https://avatars0.githubusercontent.com/u/#{user_id}?v=3&s=70' width='35'>
         </td>
         <td>
           #{body}
@@ -85,7 +85,7 @@ class Hendl
     original_comments = client.issue_comments(source, original.number)
     comments = []
     original_comments.each do |original_comment|
-      table_code = table(original_comment.user.id, "Original comment by @#{original_comment.user.login}")
+      table_code = table(original_comment.user.id, "@#{original_comment.user.login} commented")
       body = [table_code, original_comment.body]
       comments << {
         created_at: original_comment.created_at.iso8601,
