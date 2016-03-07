@@ -198,6 +198,6 @@ open_only = !ENV["ALL"]
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
        destination: destination,
-            reason: "`fastlane` is now a mono repo, you can read more about the change in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane).",
+            reason: "`fastlane` is now a mono repo, you can read more about the change in our [blog post](https://krausefx.com/blog/our-goal-to-unify-fastlane-tools). All tools are now available in the [fastlane main repo](https://github.com/fastlane/fastlane) :rocket:",
          open_only: open_only)
 end
