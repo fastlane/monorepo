@@ -37,6 +37,8 @@ class Hendl
         next
       end
 
+      next unless original.pull_request.nil? # no PRs for now
+
       labels = original.labels.collect { |a| a[:name] }
       if labels.include?("migrated") or labels.include?("migration_failed")
         puts "Skipping #{original.number} because it's already migrated or failed"
@@ -55,7 +57,7 @@ class Hendl
     if original.pull_request.nil?
       hendl_issue(original)
     else
-      hendl_pr(original)
+      # hendl_pr(original)
     end
   end
 
@@ -64,7 +66,7 @@ class Hendl
     #   at least one second between requests
     # also https://developer.github.com/v3/#rate-limiting
     #   maximum of 5000 requests an hour => 83 requests per minute
-    sleep 2
+    sleep 2.5
   end
 
   def table(user_id, body)
@@ -150,6 +152,7 @@ class Hendl
       body = []
       body << "This issue was migrated to #{new_issue_url}. Please post all further comments there."
       body << reason
+      puts new_issue_url
       client.add_comment(source, original.number, body.join("\n\n"))
       smart_sleep
       client.close_issue(source, original.number) unless original.state == "closed"
@@ -192,8 +195,10 @@ end
 
 require './tools'
 destination = "fastlane/fastlane" # TODO: Should be fastlane
-names = Array(ENV["TOOL"] || @tools.delete("fastlane")) # we don't want to import issues from our own repo
+names = Array(ENV["TOOL"] || @tools.delete_if { |a| a == "fastlane" }) # we don't want to import issues from our own repo
 open_only = !ENV["ALL"]
+
+puts "Migrating #{names.join(', ')}"
 
 names.each do |current|
   Hendl.new(source: "fastlane/#{current}",
