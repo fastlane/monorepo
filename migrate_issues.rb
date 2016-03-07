@@ -34,6 +34,7 @@ class Hendl
     client.issues(source, per_page: 1000, state: "all").each do |original|
       if self.open_only and original.state != "open"
         puts "Skipping #{original.number} as it's not an open one"
+        next
       end
 
       labels = original.labels.collect { |a| a[:name] }
