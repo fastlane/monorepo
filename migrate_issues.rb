@@ -64,7 +64,7 @@ class Hendl
     #   at least one second between requests
     # also https://developer.github.com/v3/#rate-limiting
     #   maximum of 5000 requests an hour => 83 requests per minute
-    sleep 1
+    sleep 2
   end
 
   def table(user_id, body)
